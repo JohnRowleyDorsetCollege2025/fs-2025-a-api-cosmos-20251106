@@ -20,7 +20,15 @@ var container = await database.Database.CreateContainerIfNotExistsAsync(
         PartitionKeyPath = "/id"
     });
 
+var ordersContainerResponse = await database.Database.CreateContainerIfNotExistsAsync(
+    new Microsoft.Azure.Cosmos.ContainerProperties
+    {
+        Id = configuration["orders"],
+        PartitionKeyPath = "/id"
+    });
+var ordersContainer= ordersContainerResponse.Container;
 builder.Services.AddSingleton(container.Container);
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -37,25 +45,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+;
 
 
 app.MapGet("/insert", async (Container container) =>
@@ -83,7 +73,19 @@ app.MapGet("/students/{id}", async (string id, Container container) =>
     }
 });
 
+// Create/insert an order
+app.MapPost("/orders", async (Order order) =>
+{
+    if (order is null || order.Customer is null || string.IsNullOrWhiteSpace(order.Customer.CustomerId))
+        return Results.BadRequest("Order must include customer with customerId.");
 
+    // Ensure an id if caller didn't send one
+    order.Id ??= $"order-{Guid.NewGuid()}";
+
+    var result = await ordersContainer.CreateItemAsync(order, new PartitionKey(order.Customer.CustomerId));
+    return Results.Created($"/orders/{order.Customer.CustomerId}/{order.Id}", result.Resource);
+})
+.WithName("CreateOrder");
 app.Run();
 
 internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
