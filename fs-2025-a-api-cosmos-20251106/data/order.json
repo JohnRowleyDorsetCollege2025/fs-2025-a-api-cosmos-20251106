@@ -1,0 +1,33 @@
+{
+  "id": "order-1001",
+  "customer": {
+    "customerId": "cust-501",
+    "name": "Alice Johnson",
+    "address": {
+      "street": "42 Green Park",
+      "city": "Dublin",
+      "country": "Ireland"
+    }
+  },
+  "items": [
+    {
+      "productId": "p-01",
+      "productName": "Wireless Mouse",
+      "quantity": 2,
+      "price": 19.99
+    },
+    {
+      "productId": "p-02",
+      "productName": "Mechanical Keyboard",
+      "quantity": 1,
+      "price": 89.99
+    }
+  ],
+  "orderDate": "2025-02-18T10:30:00Z",
+  "status": "Shipped",
+  "shipping": {
+    "method": "Express",
+    "trackingNumber": "TRACK1234567",
+    "delivered": false
+  }
+}
