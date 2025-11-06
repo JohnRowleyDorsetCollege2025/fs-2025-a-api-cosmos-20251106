@@ -67,6 +67,8 @@ app.MapGet("/orders/{id}", async (string id) =>
     try
     {
         var response = await container.ReadItemAsync<Order>(id, new PartitionKey(id));
+
+       Console.WriteLine(response.Resource.Customer.Name);
         return Results.Ok(response.Resource);
     }
     catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
