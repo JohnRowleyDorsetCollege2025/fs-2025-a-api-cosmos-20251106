@@ -20,7 +20,7 @@ var container = await database.Database.CreateContainerIfNotExistsAsync(
         PartitionKeyPath = "/id"
     });
 
-builder.Services.AddSingleton(client);
+builder.Services.AddSingleton(container.Container);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
