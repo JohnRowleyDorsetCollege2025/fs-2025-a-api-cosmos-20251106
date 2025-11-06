@@ -1,3 +1,6 @@
+using fs_2025_a_api_cosmos_20251106.Models;
+using Microsoft.Azure.Cosmos;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -53,6 +56,33 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+
+app.MapGet("/insert", async (Container container) =>
+{
+    var student = new Student
+    {
+        id = Guid.NewGuid().ToString(),
+        Name = "John Doe",
+        Year = 2
+    };
+    var response = await container.CreateItemAsync(student, new PartitionKey(student.id));
+    return Results.Ok(response.Resource);
+});
+
+app.MapGet("/students/{id}", async (string id, Container container) =>
+{
+    try
+    {
+        var response = await container.ReadItemAsync<Student>(id, new PartitionKey(id));
+        return Results.Ok(response.Resource);
+    }
+    catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+    {
+        return Results.NotFound();
+    }
+});
+
 
 app.Run();
 
