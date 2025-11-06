@@ -20,13 +20,8 @@ var container = await database.Database.CreateContainerIfNotExistsAsync(
         PartitionKeyPath = "/id"
     });
 
-var ordersContainerResponse = await database.Database.CreateContainerIfNotExistsAsync(
-    new Microsoft.Azure.Cosmos.ContainerProperties
-    {
-        Id = configuration["orders"],
-        PartitionKeyPath = "/id"
-    });
-var ordersContainer= ordersContainerResponse.Container;
+
+
 builder.Services.AddSingleton(container.Container);
 
 // Add services to the container.
