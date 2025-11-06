@@ -1,4 +1,6 @@
-﻿namespace fs_2025_a_api_cosmos_20251106.Models
+﻿using System.Text.Json.Serialization;
+
+namespace fs_2025_a_api_cosmos_20251106.Models
 {
     public class Student
     {
@@ -9,7 +11,8 @@
 
     public class Order
     {
-        public string Id { get; set; }
+        [JsonPropertyName("id")]  // ensures JSON has "id"
+        public string id { get; set; }
         public Customer Customer { get; set; }
         public List<OrderItem> Items { get; set; }
         public DateTime OrderDate { get; set; }

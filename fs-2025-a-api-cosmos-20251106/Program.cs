@@ -48,14 +48,14 @@ app.UseHttpsRedirection();
 // Create/insert an order
 app.MapPost("/orders", async (Order order) =>
 {
-    //if (order is null || order.Customer is null || string.IsNullOrWhiteSpace(order.Customer.CustomerId))
-    //    return Results.BadRequest("Order must include customer with customerId.");
+    if (order is null || order.Customer is null || string.IsNullOrWhiteSpace(order.Customer.CustomerId))
+        return Results.BadRequest("Order must include customer with customerId.");
 
-    //// Ensure an id if caller didn't send one
-    //order.Id ??= $"order-{Guid.NewGuid()}";
+    // Ensure an id if caller didn't send one
+    order.id ??= $"order-{Guid.NewGuid()}";
 
-    var result = await container.CreateItemAsync(order, new PartitionKey(order.Customer.CustomerId));
-    return Results.Created($"/orders/{order.Id}", result.Resource);
+    var result = await container.CreateItemAsync(order, new PartitionKey(order.id));
+    return Results.Created($"/orders/{order.id}", result.Resource);
 })
 .WithName("CreateOrder");
 
